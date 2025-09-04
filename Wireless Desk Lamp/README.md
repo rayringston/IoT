@@ -5,6 +5,9 @@ This project uses an ESP32 microcontroller to act as a client to a MQTT broker. 
 # How it Works
 The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQTT%20Broker) for more information, while the client is an ESP32. The ESP32 
 
+<img width="1566" height="909" alt="image" src="https://github.com/user-attachments/assets/74c30e95-db62-495f-8768-062f91b46c99" />
+
+
 ## MQTT Client
 The most important component of this project, was the ability to control the lamp wirelessly. To achieve this, I opted to use MQTT, since it is designed for small, low-distance networks of devices. A Raspberry Pi Model 2B is hosting a 
 ## Relay Switching
