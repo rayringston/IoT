@@ -1,12 +1,12 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-const char* ssid = "Verizon_LBQZ79";
-const char* password = "lad-posy9-pet";
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
 // Apt WiFi
 
-const char* mqttBroker = "192.168.1.200"; // this is statically assigned, cool shit
-const int mqttPort = 1883;
+const char* mqttBroker = "YOUR_IP_ADDRESS"; // this is statically assigned, cool shit
+const int mqttPort = 1883; // for unencrypted MQTT
 // MQTT info
 
 WiFiClient espClient;
