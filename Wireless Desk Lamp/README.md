@@ -7,8 +7,37 @@ The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQT
 
 ## MQTT Client
 ## Relay Switching
+The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. 
+
 ## Button Control
-The button was the last feature included, and was initially an oversight of mine. Since I removed the physical switch on the lamp and replaced it with a relay, the lamp could only be controlled wirelessly, and as such was useless without an internet connection. 
+The button was the last feature included, and was initially an oversight of mine. Since I removed the physical switch on the lamp and replaced it with a relay, the lamp could only be controlled wirelessly, and as such was useless without an internet connection. The button is simply connected between GND and a GPIO pin of the ESP32, which must be configured to use the interal pullup resistor.
+
+Physical buttons tend to have a short period, called a bounce, where the signal from the button is unstable. In this bounce, there may be multiple instances where the button goes LOW-HIGH-LOW, and button presses may be counted multiple times with one press. The following code is my implentation of debouncing the push button.
+
+```c++
+int reading = digitalRead(buttonPin);
+
+  if (reading != lastButtonState) { // button state has changed
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) { // not a bounce
+    if (reading != buttonState) { // button is in a different state than before
+      buttonState = reading;
+
+      if (buttonState == LOW) { // pressed down, active low
+        if (relayState == 0) relayState = 1;
+        else if (relayState == 1) relayState = 0;
+
+        digitalWrite(relayPin, relayState);
+      }
+    }
+  }
+
+  lastButtonState = reading;
+```
+The ```debounceDelay``` variable is set to 50 ms, and is the minumum amount of time between input changes to register a button press. Since the bouncing only happens for a few milliseconds, all of the addtional signal changes will be ingored.
+
 
 # Previous Iterations
 The first iteration of the project was implemented using an HTTP server, hosted on an Arduino MKR 1000 WiFi. This system was unnecessarily complicated for a small network of devices, and using HTTP to communicate had too much latency. At times, it could take 2-3 tries just to turn the lamp on or off. 
