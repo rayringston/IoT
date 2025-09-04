@@ -6,13 +6,14 @@ This project uses an ESP32 microcontroller to act as a client to a MQTT broker. 
 The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQTT%20Broker) for more information, while the client is an ESP32. The ESP32 
 
 ## MQTT Client
+The most important component of this project, was the ability to control the lamp wirelessly. To achieve this, I opted to use MQTT, since it is designed for small, low-distance networks of devices. A Raspberry Pi Model 2B is hosting a 
 ## Relay Switching
-The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. 
+The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. The state of the relay is toggled by a button press, and can specific by an MQTT message.
 
 ## Button Control
 The button was the last feature included, and was initially an oversight of mine. Since I removed the physical switch on the lamp and replaced it with a relay, the lamp could only be controlled wirelessly, and as such was useless without an internet connection. The button is simply connected between GND and a GPIO pin of the ESP32, which must be configured to use the interal pullup resistor.
 
-Physical buttons tend to have a short period, called a bounce, where the signal from the button is unstable. In this bounce, there may be multiple instances where the button goes LOW-HIGH-LOW, and button presses may be counted multiple times with one press. The following code is my implentation of debouncing the push button.
+Physical buttons tend to have a short period, called a bounce, where the signal from the button is unstable. In this bounce, there may be multiple instances where the button goes LOW-HIGH-LOW, and button presses may be counted multiple times with one press. The following code is my implentation of debouncing the push button:>
 
 ```c++
 int reading = digitalRead(buttonPin);
