@@ -3,7 +3,7 @@
 This project uses an ESP32 microcontroller to act as a client to a MQTT broker. The ESP32 uses its GPIO pins to control a relay, switching the state of a desk lamp. It also features an external push button, allowing you to manually control the lamp. The client can be communicated with via a smartphone app, [IoT MQTT Panel](https://apps.apple.com/pl/app/iot-mqtt-panel/id6466780124).
 
 # How it Works
-The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQTT%20Broker) for more information, while the client is an ESP32. The ESP32 
+The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQTT%20Broker) for more information, while the client is an ESP32. The ESP32 is small microcontroller, with a dual-core CPU, including built-in WiFi and bluetooth capabilites. And the main part, the lamp, is just an old desk lamp that was slightly modified.
 
 <img width="1566" height="909" alt="System Diagram" src="https://github.com/user-attachments/assets/74c30e95-db62-495f-8768-062f91b46c99" />
 
@@ -108,10 +108,10 @@ void reconnect() { // loop to reconnect to MQTT broker
 }
 ```
 
-The code above shows the majority of the functions necessary for the ESP32 to act as an MQTT client. It is also necessary to 
+The code above shows the majority of the functions necessary for the ESP32 to act as an MQTT client. It is also necessary to attach the above callback function, as well as run the client loop. However, these are simple additions, and the full code can be found in this repository. First, the microcontroller must connect to the WiFi, and the onboard LED is used to show the current status. Similarly, it needs to connect to the MQTT broker, and subscribe to the relevant topics, again using a status LED. From there, the ESP32 listens for any message and responds accordingly.
 
 ## Relay Switching
-The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. The state of the relay is toggled by a button press, and can specific by an MQTT message.
+The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. The state of the relay is toggled by a button press, and can specified by an MQTT message.
 
 ## Button Control
 The button was the last feature included, and was initially an oversight of mine. Since I removed the physical switch on the lamp and replaced it with a relay, the lamp could only be controlled wirelessly, and as such was useless without an internet connection. The button is simply connected between GND and a GPIO pin of the ESP32, which must be configured to use the interal pullup resistor.
