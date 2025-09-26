@@ -25,7 +25,90 @@ const int mqttPort = 1883; // for unencrypted MQTT
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+
+/******* Other variable definitions **************/
+
+void WiFiInit() {
+  delay(10);
+
+  WiFi.begin(ssid, password);
+
+  while(WiFi.status() != WL_CONNECTED) { // Onboard LED slow flashes until the WiFi is connected
+    if (ledState == 0) {
+      ledState = 1;
+      digitalWrite(ledPin, HIGH);
+    } else {
+      ledState = 0;
+      digitalWrite(ledPin, LOW);
+    }
+
+    delay(500);
+  }
+  
+  ledState = 0;
+  for (int i = 0; i < 6; i++) { // Quick burst once it's connected
+    digitalWrite(ledPin, HIGH);
+    delay(50);
+    digitalWrite(ledPin, LOW);
+    delay(50);
+  }
+}
+
+void callback(char* topic, byte* message, unsigned int length) {
+  String msg;
+
+  Serial.println("Got message");
+
+  for (int i = 0; i < length; i++) {
+    msg += (char) message[i];
+  }
+
+  Serial.print("Topic: ");
+  Serial.println(topic);
+  Serial.print("Msg: ");
+  Serial.println(msg);
+
+  if (String(topic) == "esp32/lamp") {
+    if (msg == "on") {
+      relayState = 1;
+      digitalWrite(relayPin, HIGH);
+    } else if (msg == "off") {
+      relayState = 0;
+      digitalWrite(relayPin, LOW);
+    }
+  }
+}
+
+void reconnect() { // loop to reconnect to MQTT broker
+  while(!client.connected()) {
+    Serial.println("Connecting to MQTT... ");
+    String clientID = "esp32-client-";
+    clientID += String(WiFi.macAddress());
+    if (client.connect(clientID.c_str())) {
+      client.subscribe("esp32/lamp");
+    }
+    if (ledState == 0) {
+      ledState = 1;
+      digitalWrite(ledPin, HIGH);
+    } else {
+      ledState = 0;
+      digitalWrite(ledPin, LOW);
+    }
+
+    delay(500);
+  }
+
+  ledState = 0;
+  for (int i = 0; i < 6; i++) { // Quick burst once it's connected
+    digitalWrite(ledPin, HIGH);
+    delay(50);
+    digitalWrite(ledPin, LOW);
+    delay(50);
+  }
+}
 ```
+
+The code above shows the majority of the functions necessary for the ESP32 to act as an MQTT client. It is also necessary to 
 
 ## Relay Switching
 The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. The state of the relay is toggled by a button press, and can specific by an MQTT message.
@@ -33,7 +116,7 @@ The relay is connected to an output pin on the ESP32 board, and is on a shield t
 ## Button Control
 The button was the last feature included, and was initially an oversight of mine. Since I removed the physical switch on the lamp and replaced it with a relay, the lamp could only be controlled wirelessly, and as such was useless without an internet connection. The button is simply connected between GND and a GPIO pin of the ESP32, which must be configured to use the interal pullup resistor.
 
-Physical buttons tend to have a short period, called a bounce, where the signal from the button is unstable. In this bounce, there may be multiple instances where the button goes LOW-HIGH-LOW, and button presses may be counted multiple times with one press. The following code is my implentation of debouncing the push button:>
+Physical buttons tend to have a short period, called a bounce, where the signal from the button is unstable. In this bounce, there may be multiple instances where the button goes LOW-HIGH-LOW, and button presses may be counted multiple times with one press. The following code is my implentation of debouncing the push button:
 
 ```c++
 int reading = digitalRead(buttonPin);
