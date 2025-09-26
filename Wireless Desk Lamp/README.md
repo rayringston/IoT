@@ -10,6 +10,23 @@ The MQTT broker is hosted by a Raspberry Pi, see [RPi MQTT Broker](IoT/RPi%20MQT
 
 ## MQTT Client
 The most important component of this project, was the ability to control the lamp wirelessly. To achieve this, I opted to use MQTT, since it is designed for small, low-distance networks of devices. A Raspberry Pi Model 2B is acting as an MQTT broker, responding to incoming messages from the various connected devices. The ESP32 is a client on the network, and an app on my phone is another client. By interacting with this app, messages are sent to the broker, and passed towards whichever ESP32 is subscribed to that topic. 
+
+```c++
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
+// Apt WiFi
+
+const char* mqttBroker = "YOUR_IP_ADDRESS"; // this is statically assigned, cool shit
+const int mqttPort = 1883; // for unencrypted MQTT
+// MQTT info
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+```
+
 ## Relay Switching
 The relay is connected to an output pin on the ESP32 board, and is on a shield that includes a flyback diode and an optocoupler for reverse current protection. The relay is controlled by both the MQTT connection and the physical button on the lamp. The state of the relay is toggled by a button press, and can specific by an MQTT message.
 
