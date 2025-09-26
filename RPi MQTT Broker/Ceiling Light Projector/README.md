@@ -1,1 +1,0 @@
-# Ceiling Light Projector
