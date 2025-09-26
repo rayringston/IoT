@@ -1,5 +1,5 @@
 # Wireless Desk Lamp
-
+---
 This project uses an ESP32 microcontroller to act as a client to a MQTT broker. The ESP32 uses its GPIO pins to control a relay, switching the state of a desk lamp. It also features an external push button, allowing you to manually control the lamp. The client can be communicated with via a smartphone app, [IoT MQTT Panel](https://apps.apple.com/pl/app/iot-mqtt-panel/id6466780124).
 
 # How it Works
